@@ -1,0 +1,206 @@
+################################################################################
+# {{ ansible_managed }}
+################################################################################
+# ==============================================================================
+#                                                              General settings
+# ------------------------------------------------------------------------------
+
+node_name  = "{{ ansible_hostname }}"
+datacenter = "{{ consul_datacenter | default('dc1') }}"
+domain     = "{{ consul_domain | default('consul.') }}"
+data_dir   = "{{ os_dir_data }}/consul/data"
+encrypt    = "{{ encryption_key | default() | mandatory }}"
+ui         = {{ consul_ui | default(true) | bool | lower }}
+
+disable_update_check = true
+discard_check_output = true
+retry_join = {{ consul_bootstrap_addresses | default('0.0.0.0') | to_json }}
+check_update_interval = "10m"
+enable_central_service_config = false
+enable_debug = false
+enable_script_checks = false
+enable_local_script_checks = false
+enable_syslog = false
+encrypt_verify_incoming = true
+encrypt_verify_outgoing = true
+disable_keyring_file = false
+leave_on_terminate = true
+raft_snapshot_threshold = 16384
+raft_snapshot_interval = "30s"
+raft_trailing_logs = 10000
+reconnect_timeout = "48h"
+reconnect_timeout_wan = "48h"
+recursors = ["8.8.8.8", "8.8.4.4"]
+
+node_meta {
+  "ansible_consul_version" = "UNKNOWN"
+}
+
+performance {
+  leave_drain_time = "10s"
+  raft_multiplier  = 6 # (faster) 1 <--> 10 (slower)
+  rpc_hold_timeout = "7s"
+}
+
+# ==============================================================================
+#                                                              Network settings
+# ------------------------------------------------------------------------------
+
+advertise_addr = "{{ ansible_default_ipv4['address'] }}"
+
+client_addr    = "0.0.0.0" # external access
+bind_addr      = "0.0.0.0" # internal access
+
+addresses {
+  dns   = "0.0.0.0"
+  http  = "0.0.0.0"
+  https = "0.0.0.0"
+  grpc  = "0.0.0.0"
+}
+
+ports {
+  dns   = 8600
+  http  = 8500
+  https = -1 # 8501 to enable
+  grpc  = -1 # 8502 to enable
+
+  serf_lan = 8301
+  serf_wan = 8302
+
+  server = 8300
+
+  sidecar_min_port = 21000
+  sidecar_max_port = 21255
+
+  expose_min_port = 21500
+  expose_max_port = 21755
+}
+
+dns_config {
+  use_cache           = true
+  cache_max_age       = "87600h"
+  allow_stale         = true
+  max_stale           = "87600h"
+  node_ttl            = "10s"
+  service_ttl         = "10s"
+  enable_truncate     = true
+  only_passing        = false
+  recursor_timeout    = "2s"
+  disable_compression = false
+  #a_record_limit      = 0
+  #enable_additional_node_meta_txt  = true
+  soa {
+    expire  = 86400
+    min_ttl = 0
+    refresh = 3600
+    retry   = 600
+  }
+}
+
+
+# ==============================================================================
+#                                                               Server settings
+# ------------------------------------------------------------------------------
+
+server = {{ server_enabled | default(false) | bool | lower }}
+
+{% if server_enabled %}
+bootstrap_expect = {{ bootstrap_expect | default(1) | int }}
+
+autopilot {
+  cleanup_dead_servers      = true
+  last_contact_threshold    = "5s"
+  server_stabilization_time = "10s"
+  max_trailing_logs         = 500
+}
+{% endif %}
+
+# ==============================================================================
+#                                                               Client settings
+# ------------------------------------------------------------------------------
+
+#auto_encrypt {
+  allow_tls = false
+  tls       = false
+}
+
+# ==============================================================================
+#                                                                  ACL settings
+# ------------------------------------------------------------------------------
+
+primary_datacenter     = "{{ primary_datacenter | default('dc1') }}"
+enable_acl_replication = true
+
+acl {
+  enabled        = {{ acl_enabled | default(false) | bool | lower }}
+
+  default_policy = "deny"
+  policy_ttl     = "120s"
+  role_ttl       = "120s"
+  token_ttl      = "120s"
+  down_policy    = "extend-cache"
+
+  enable_key_list_policy   = "disabled"
+  enable_token_replication = false
+  enable_token_persistence = true
+
+  tokens {
+    master       = ""
+    default      = ""
+    agent        = ""
+    agent_master = ""
+    replication  = ""
+  }
+}
+
+# ==============================================================================
+#                                                                  TLS settings
+# ------------------------------------------------------------------------------
+
+ca_file   = ""
+ca_path   = ""
+cert_file = ""
+
+enable_agent_tls_for_checks = false
+
+verify_incoming        = false
+verify_incoming_rpc    = false
+verify_incoming_https  = false
+verify_outgoing        = false
+verify_server_hostname = false
+
+# ==============================================================================
+#                                                       Consul Connect settings
+# ------------------------------------------------------------------------------
+
+connect {
+  enabled = {{ connect_enabled | default(false) | bool | lower }}
+  ca_provider = "{{ connect_provider | default('consul') }}"
+  ca_config {
+{% if connect_provider == "consul" %}
+    private_key = ""
+    root_cert   = ""
+{% endif %}
+{% if connect_provider == "vault" %}
+    address = "{{ connect_provider_vault_address | default('127.0.0.1:8200') }}"
+    token   = ""
+
+    root_pki_path         = "pki_root"
+    intermediate_pki_path = "pki_intermediate"
+{% endif %}
+    csr_max_concurrent = 1
+  }
+
+}
+
+# ==============================================================================
+#                                                            Telemetry settings
+# ------------------------------------------------------------------------------
+
+telemetry {
+  prometheus_retention_time = "600s"
+}
+
+################################################################################
+# {{ ansible_managed }}
+################################################################################

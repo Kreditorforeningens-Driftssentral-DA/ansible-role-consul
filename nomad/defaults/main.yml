@@ -1,0 +1,36 @@
+---
+# General settings
+version: "1.6.2"
+datacenter: "dc1"
+service_domain: "consul."
+ui_enabled: false
+
+# Server settings
+server_enabled: false
+server_bootstrap_expect: 1
+server_bootstrap_address: ["127.0.0.1"]
+
+# Client settings
+client_enabled: true
+client_meta: []
+
+# ACL settings
+acl_enabled: false
+acl_master_token: ""
+acl_agent_token: ""
+acl_datacenter: "dc1"
+
+# Encryption settings
+encryption_enabled: false
+
+# TLS settings
+tls_enabled: false
+
+# Consul Connect settings
+connect_enabled: false
+connect_provider: "consul"
+
+# Telemetry settings
+telemetry_enabled: false
+telemetry_interval: "10s"
+telemetry_prometheus_enabled: true

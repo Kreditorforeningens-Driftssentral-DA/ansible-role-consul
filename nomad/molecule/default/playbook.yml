@@ -1,0 +1,24 @@
+---
+
+- name: Converge Servers
+  hosts: mlc-consul-server
+  roles:
+  - role: nomad
+  vars:
+    server_enabled: true
+    client_enabled: false
+    consul_enabled: false
+    vault_enabled: false
+    telemetry_prometheus_enabled: false
+
+- name: Converge Clients
+  hosts: mlc-consul-client
+  roles:
+  - role: nomad
+  vars:
+    server_enabled: false
+    client_enabled: true
+    consul_enabled: false
+    vault_enabled: false
+    server_bootstrap_address: ["{{ hostvars['mlc-consul-server']['ansible_default_ipv4']['address'] }}"]
+    telemetry_prometheus_enabled: false
