@@ -7,7 +7,7 @@ on:
     branches:
       - master
     paths:
-      - "nomad/**"
+      - "consul-fix-me/**"
 
 jobs:
 
@@ -37,5 +37,5 @@ jobs:
             fetch-depth: 1
       - name: Run tests
         run: |
-          cd nomad
+          cd consul
           molecule test
