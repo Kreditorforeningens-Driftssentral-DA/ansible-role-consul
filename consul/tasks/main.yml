@@ -27,9 +27,6 @@
 
   when: not version_exists['stat']['exists']
 
-- name: configure cni-plugin (consul-connect)
-  include: install_cni.yml
-
 - name: configure settings
   include: configure.yml
 

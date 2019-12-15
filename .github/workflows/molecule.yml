@@ -7,7 +7,7 @@ on:
     branches:
       - master
     paths:
-      - "consul-fix-me/**"
+      - "consul/**"
 
 jobs:
 

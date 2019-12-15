@@ -1,9 +1,9 @@
 param (
-    [string]$command = "list",
-    [string]$distro  = "centos:7",
-    [string]$cmd     = "/usr/sbin/init"
+    [String]$command = "list",
+    [String]$role    = "consul",
+    [String]$distro  = "centos:7",
+    [String]$cmd     = "/usr/sbin/init"
 )
-$role = "nomad"
 
 docker run --rm -it `
   -v "$($pwd)/$($role):/tmp/$($role)" `

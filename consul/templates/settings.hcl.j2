@@ -8,29 +8,32 @@
 node_name  = "{{ ansible_hostname }}"
 datacenter = "{{ consul_datacenter | default('dc1') }}"
 domain     = "{{ consul_domain | default('consul.') }}"
-data_dir   = "{{ os_dir_data }}/consul/data"
+data_dir   = "{{ path_storage }}/consul/data"
 encrypt    = "{{ encryption_key | default() | mandatory }}"
 ui         = {{ consul_ui | default(true) | bool | lower }}
+retry_join = {{ server_bootstrap_address | default('["127.0.0.1"]') | to_json }}
+
+enable_debug  = false
+enable_syslog = false
+
+raft_snapshot_interval  = "30s"
+raft_snapshot_threshold = 16384
+raft_trailing_logs      = 10000
+
+enable_script_checks       = false
+enable_local_script_checks = false
+
+enable_central_service_config = false
+check_update_interval         = "10m"
 
 disable_update_check = true
 discard_check_output = true
-retry_join = {{ consul_bootstrap_addresses | default('0.0.0.0') | to_json }}
-check_update_interval = "10m"
-enable_central_service_config = false
-enable_debug = false
-enable_script_checks = false
-enable_local_script_checks = false
-enable_syslog = false
-encrypt_verify_incoming = true
-encrypt_verify_outgoing = true
-disable_keyring_file = false
-leave_on_terminate = true
-raft_snapshot_threshold = 16384
-raft_snapshot_interval = "30s"
-raft_trailing_logs = 10000
-reconnect_timeout = "48h"
+
+reconnect_timeout     = "48h"
 reconnect_timeout_wan = "48h"
-recursors = ["8.8.8.8", "8.8.4.4"]
+leave_on_terminate    = true
+
+disable_keyring_file = false
 
 node_meta {
   "ansible_consul_version" = "UNKNOWN"
@@ -47,7 +50,6 @@ performance {
 # ------------------------------------------------------------------------------
 
 advertise_addr = "{{ ansible_default_ipv4['address'] }}"
-
 client_addr    = "0.0.0.0" # external access
 bind_addr      = "0.0.0.0" # internal access
 
@@ -82,13 +84,13 @@ dns_config {
   allow_stale         = true
   max_stale           = "87600h"
   node_ttl            = "10s"
-  service_ttl         = "10s"
   enable_truncate     = true
   only_passing        = false
   recursor_timeout    = "2s"
   disable_compression = false
   #a_record_limit      = 0
-  #enable_additional_node_meta_txt  = true
+  #enable_additional_node_meta_txt = true
+  #service_ttl {}
   soa {
     expire  = 86400
     min_ttl = 0
@@ -97,6 +99,10 @@ dns_config {
   }
 }
 
+recursors = ["8.8.8.8", "8.8.4.4"]
+
+encrypt_verify_incoming = true
+encrypt_verify_outgoing = true
 
 # ==============================================================================
 #                                                               Server settings
@@ -119,7 +125,7 @@ autopilot {
 #                                                               Client settings
 # ------------------------------------------------------------------------------
 
-#auto_encrypt {
+auto_encrypt {
   allow_tls = false
   tls       = false
 }
@@ -140,7 +146,7 @@ acl {
   token_ttl      = "120s"
   down_policy    = "extend-cache"
 
-  enable_key_list_policy   = "disabled"
+  enable_key_list_policy   = false
   enable_token_replication = false
   enable_token_persistence = true
 
