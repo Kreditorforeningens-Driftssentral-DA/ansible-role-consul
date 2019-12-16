@@ -6,12 +6,12 @@ service_domain: "consul."
 ui_enabled: false
 
 # Server settings
-server_enabled: false
+server_enabled: true
 server_bootstrap_expect: 1
 server_bootstrap_address: ["127.0.0.1"]
 
 # Client settings
-client_enabled: true
+client_enabled: false
 client_meta: []
 
 # ACL settings

@@ -1,0 +1,16 @@
+---
+version: '3.7'
+
+services:
+
+  ansible-cfg:
+    build:
+      context: .
+      dockerfile: Dockerfile.ansible
+      args:
+        buildno: 1
+    image: kds/ansible:consul
+
+  server:
+    image: centos:8
+    

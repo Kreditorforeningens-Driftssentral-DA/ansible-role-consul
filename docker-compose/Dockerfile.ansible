@@ -1,0 +1,30 @@
+FROM alpine:latest
+
+RUN set -x && \
+    apk add --no-cache --virtual .build-deps gcc build-base \
+    linux-headers ca-certificates python3-dev libffi-dev libressl-dev && \
+    apk add --no-cache --virtual .required-deps \
+    python3 py3-pip openssh su-exec && \
+    pip3 install --upgrade pip && \
+    pip3 install ansible argcomplete && \
+    apk del .build-deps && rm -rf /var/cache/apk/*
+
+RUN set -x && \
+    mkdir -p /ansible/hosts /ansible/playbooks /ansible/roles && \
+    printf "[local]\nlocalhost ansible_connection=local" > /ansible/hosts/all && \
+    addgroup -S ansible && adduser -S ansible -G ansible
+
+ENV ANSIBLE_INVENTORY=/ansible/hosts \
+    ANSIBLE_PLAYBOOK_DIR=/ansible/playbooks \
+    ANSIBLE_ROLES_PATH=/ansible/roles \
+    ANSIBLE_GATHERING=smart \
+    ANSIBLE_HOST_KEY_CHECKING=false \
+    ANSIBLE_RETRY_FILES_ENABLED=false \
+    ANSIBLE_SSH_PIPELINING=true \
+    ANSIBLE_PYTHON_INTERPRETER=/usr/bin/python3
+
+VOLUME /ansible
+
+COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
+ENTRYPOINT ["docker-entrypoint.sh"]
+CMD ["ansible-playbook", "--version"]
