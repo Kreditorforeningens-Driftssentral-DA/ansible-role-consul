@@ -7,6 +7,7 @@
   vars:
     server_enabled: true
     client_enabled: false
+    dnsmasq_enabled: true
 
 - name: Converge Clients
   hosts: mlc-client
@@ -15,4 +16,5 @@
   vars:
     server_enabled: false
     client_enabled: true
+    dnsmasq_enabled: true
     server_bootstrap_address: ["{{ hostvars['mlc-server']['ansible_default_ipv4']['address'] }}"]

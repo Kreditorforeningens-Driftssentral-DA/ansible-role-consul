@@ -2,8 +2,9 @@
 # General settings
 version: "1.6.2"
 datacenter: "dc1"
-service_domain: "consul."
+service_domain: "consul"
 ui_enabled: false
+node_meta: {}
 
 # Server settings
 server_enabled: true
@@ -12,16 +13,29 @@ server_bootstrap_address: ["127.0.0.1"]
 
 # Client settings
 client_enabled: false
-client_meta: []
+
+# Performance | 0 - 10
+raft_multiplier: 8 # 0 sets to default
+
+# DNS settings
+dns_recursors: ["208.67.222.222", "8.8.8.8", "208.67.220.220", "8.8.4.4"]
+
+# dnsmasq settings
+dnsmasq_enabled: false
+dnsmasq_config_path: "/etc/dnsmasq.d"
+dnsmasq_cache_size: 8192 # 0 to disable caching
+dnsmasq_target_address: "127.0.0.1" # consul listening address
+dnsmasq_target_port: "8600" # consul dns-port
+
+# Gossip encryption settings
+encryption_enabled: false
+encryption_key: "" # Generate using 'consul keygen'
 
 # ACL settings
 acl_enabled: false
 acl_master_token: ""
 acl_agent_token: ""
 acl_datacenter: "dc1"
-
-# Encryption settings
-encryption_enabled: false
 
 # TLS settings
 tls_enabled: false
@@ -32,5 +46,5 @@ connect_provider: "consul"
 
 # Telemetry settings
 telemetry_enabled: false
-telemetry_interval: "10s"
 telemetry_prometheus_enabled: true
+telemetry_prometheus_retention: "600s"

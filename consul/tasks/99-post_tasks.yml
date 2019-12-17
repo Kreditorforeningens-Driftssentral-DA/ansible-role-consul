@@ -1,2 +1,5 @@
 ---
-# Configure environment, etc
+
+  # Run any handlers
+- name: flush handlers
+  meta: flush_handlers

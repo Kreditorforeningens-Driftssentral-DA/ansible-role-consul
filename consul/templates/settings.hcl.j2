@@ -1,20 +1,27 @@
 ################################################################################
 # {{ ansible_managed }}
 ################################################################################
-# ==============================================================================
+
+# ------------------------------------------------------------------------------
 #                                                              General settings
 # ------------------------------------------------------------------------------
 
 node_name  = "{{ ansible_hostname }}"
-datacenter = "{{ consul_datacenter | default('dc1') }}"
-domain     = "{{ consul_domain | default('consul.') }}"
+datacenter = "{{ datacenter | default('dc1') }}"
+domain     = "{{ service_domain | default('consul.') }}."
 data_dir   = "{{ path_storage }}/consul/data"
-encrypt    = "{{ encryption_key | default() | mandatory }}"
 ui         = {{ consul_ui | default(true) | bool | lower }}
 retry_join = {{ server_bootstrap_address | default('["127.0.0.1"]') | to_json }}
 
 enable_debug  = false
 enable_syslog = false
+
+node_meta {
+{% for key, value in node_meta.items() %}
+  "{{ key }}" = "{{ value }}"
+{% endfor %}
+  "deployment" = "ansible-role"
+}
 
 raft_snapshot_interval  = "30s"
 raft_snapshot_threshold = 16384
@@ -35,17 +42,13 @@ leave_on_terminate    = true
 
 disable_keyring_file = false
 
-node_meta {
-  "ansible_consul_version" = "UNKNOWN"
-}
-
 performance {
+  raft_multiplier  = {{ raft_multiplier | default(8) | int }} # (faster) 1 <--> 10 (slower)
   leave_drain_time = "10s"
-  raft_multiplier  = 6 # (faster) 1 <--> 10 (slower)
   rpc_hold_timeout = "7s"
 }
 
-# ==============================================================================
+# ------------------------------------------------------------------------------
 #                                                              Network settings
 # ------------------------------------------------------------------------------
 
@@ -99,12 +102,15 @@ dns_config {
   }
 }
 
-recursors = ["8.8.8.8", "8.8.4.4"]
+recursors = {{ dns_recursors | default('["8.8.8.8", "8.8.4.4"]') | to_json }}
 
+{% if encryption_enabled %}
+encrypt = "{{ encryption_key | mandatory }}"
 encrypt_verify_incoming = true
 encrypt_verify_outgoing = true
+{% endif %}
 
-# ==============================================================================
+# ------------------------------------------------------------------------------
 #                                                               Server settings
 # ------------------------------------------------------------------------------
 
@@ -121,7 +127,7 @@ autopilot {
 }
 {% endif %}
 
-# ==============================================================================
+# ------------------------------------------------------------------------------
 #                                                               Client settings
 # ------------------------------------------------------------------------------
 
@@ -130,7 +136,7 @@ auto_encrypt {
   tls       = false
 }
 
-# ==============================================================================
+# ------------------------------------------------------------------------------
 #                                                                  ACL settings
 # ------------------------------------------------------------------------------
 
@@ -159,7 +165,7 @@ acl {
   }
 }
 
-# ==============================================================================
+# ------------------------------------------------------------------------------
 #                                                                  TLS settings
 # ------------------------------------------------------------------------------
 
@@ -175,7 +181,7 @@ verify_incoming_https  = false
 verify_outgoing        = false
 verify_server_hostname = false
 
-# ==============================================================================
+# ------------------------------------------------------------------------------
 #                                                       Consul Connect settings
 # ------------------------------------------------------------------------------
 
@@ -199,13 +205,17 @@ connect {
 
 }
 
-# ==============================================================================
+# ------------------------------------------------------------------------------
 #                                                            Telemetry settings
 # ------------------------------------------------------------------------------
 
+{% if telemetry_enabled %}
 telemetry {
-  prometheus_retention_time = "600s"
+{% if telemetry_enabled %}
+  prometheus_retention_time = "{{ telemetry_prometheus_retention | default('600s') }}"
+{% endif %}
 }
+{% endif %}
 
 ################################################################################
 # {{ ansible_managed }}

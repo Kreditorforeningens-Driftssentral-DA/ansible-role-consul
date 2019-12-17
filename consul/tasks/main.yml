@@ -30,6 +30,11 @@
 - name: perform installation
   include: 04-install.yml
 
+  # Install & configure dnsmasq
+- name: perform dnsmasq installation
+  include: 04x-install_dnsmasq.yml
+  when: dnsmasq_enabled
+
   # Configure application settings
 - name: configure settings
   include: 05-configure.yml
@@ -37,3 +42,7 @@
   # Enable/start service
 - name: start services
   include: 06-initialize.yml
+
+  # Enable/start service
+- name: run post-tasks
+  include: 99-post_tasks.yml

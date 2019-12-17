@@ -1,0 +1,47 @@
+---
+
+- name: dnsmasq | Install package
+  become: true
+  package:
+    name: dnsmasq
+    state: present
+
+- name: dnsmasq | Check if folders already exist
+  stat:
+    path: "{{ item }}"
+  register: folder_status_dnsmasq
+  loop:
+  - "{{ dnsmasq_config_path }}"
+
+- name: dnsmasq | Create missing folders
+  become: true
+  file:
+    dest: "{{ item['item'] }}"
+    state: directory
+    owner: root
+    group: root
+    mode: 0755
+  when: not item['stat']['exists'] | bool
+  loop: "{{ folder_status_dnsmasq.results }}"
+
+- name: dnsmasq | application settings
+  become: true
+  notify:
+  - reload_daemon
+  template:
+    dest: "{{ dnsmasq_config_path }}/{{ item }}"
+    src: "{{ item }}.j2"
+    owner: "root"
+    group: "root"
+    mode: 0644
+  loop:
+  - dnsmasq.consul
+
+- name: dnsmasq | Start and enable unit
+  become: true
+  notify:
+  systemd:
+    name: "dnsmasq"
+    masked: no
+    enabled: yes
+    state: started
