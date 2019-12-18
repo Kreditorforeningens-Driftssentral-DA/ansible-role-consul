@@ -44,5 +44,5 @@
   include: 06-initialize.yml
 
   # Enable/start service
-- name: run post-tasks
+- name: perform post-install tasks
   include: 99-post_tasks.yml
