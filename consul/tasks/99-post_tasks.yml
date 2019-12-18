@@ -24,9 +24,10 @@
     - 8600/udp
     - 21000-21255/udp
 
-- name: disable SELinux (Required?)
+- name: selinux permissive, logging actions that would be blocked
   selinux:
-    state: disabled
+    policy: targeted
+    state: permissive
 
   # Run any handlers
 - name: flush handlers
