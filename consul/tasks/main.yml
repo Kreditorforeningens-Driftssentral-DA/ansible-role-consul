@@ -1,48 +1,34 @@
 ---
-   # TODO: Check if OS supported
-#- name: assert environment
-#  include: 00-assert.yml
 
   # TODO: Include variables specific to your os
 - name: include OS variables
   include_vars: default.yml
 
-  # Install/validate required packages
+# ------------------------------------------------------------------------------
+
+  # Run pre-tasks
 - name: include dependencies
-  include: 01-pre_tasks.yml
+  include: 010-pre_tasks.yml
 
-  # Check if version is already installed
-- name: check installation status
-  stat:
-    path: "{{ path_packages }}/{{ application }}/{{ version }}"
-  register: version_exists
+# ------------------------------------------------------------------------------
 
-  # Only download/install if the version isn't already installed
-- name: download files
-  include: 02-download.yml
-  when: not version_exists['stat']['exists']
+  # Install main application
+- name: install {{ application }}
+  include: 020-install_main.yml
 
-  # Create any missing folders
-- name: create folders
-  include: 03-folders.yml
-
-  # Install application
-- name: perform installation
-  include: 04-install.yml
-
-  # Install & configure dnsmasq
-- name: perform dnsmasq installation
-  include: 04x-install_dnsmasq.yml
+  # [OPTIONAL] Install dnsmasq dns
+- name: install {{ application }}
+  include: 025-install_dnsmasq.yml
   when: dnsmasq_enabled
 
+# ------------------------------------------------------------------------------
+
   # Configure application settings
-- name: configure settings
-  include: 05-configure.yml
+- name: configure {{ application }}
+  include: 030-configure_main.yml
 
-  # Enable/start service
-- name: start services
-  include: 06-initialize.yml
+# ------------------------------------------------------------------------------
 
-  # Enable/start service
-- name: perform post-install tasks
-  include: 99-post_tasks.yml
+  # Perform post-install tasks
+- name: post-tasks
+  include: 040-post_tasks.yml

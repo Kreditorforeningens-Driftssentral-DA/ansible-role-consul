@@ -1,4 +1,5 @@
 ---
+
   # Configure firewall
 - name: configure firewall settings
   become: true
@@ -22,13 +23,33 @@
     - 8302/udp
     - 8600/udp
     - 21000-21255/udp
+  when: configure_firewalld
+  tags: ["post"]
 
 - name: selinux permissive, logging actions that would be blocked
   become: true
   selinux:
     policy: targeted
     state: permissive
+  when: configure_selinux
+  tags: ["post"]
+
+# ------------------------------------------------------------------------------
+
+- name: POST | Start and enable {{ application }} unit
+  become: true
+  notify:
+    - reload_daemon
+  systemd:
+    name: "{{ application }}"
+    masked: no
+    enabled: yes
+    state: started
+  tags: ["post"]
+
+# ------------------------------------------------------------------------------
 
   # Run any handlers
-- name: flush handlers
+- name: POST | Flush handlers
   meta: flush_handlers
+  tags: ["post"]

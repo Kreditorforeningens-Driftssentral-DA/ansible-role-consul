@@ -5,6 +5,7 @@
   package:
     name: dnsmasq
     state: present
+  tags: ["install", "optional"]
 
 - name: dnsmasq | Check if folders already exist
   stat:
@@ -12,6 +13,7 @@
   register: folder_status_dnsmasq
   loop:
   - "{{ dnsmasq_config_path }}"
+  tags: ["install", "optional"]
 
 - name: dnsmasq | Create missing folders
   become: true
@@ -23,6 +25,7 @@
     mode: 0755
   when: not item['stat']['exists'] | bool
   loop: "{{ folder_status_dnsmasq.results }}"
+  tags: ["install", "optional"]
 
 - name: dnsmasq | application settings
   become: true
@@ -36,6 +39,7 @@
     mode: 0644
   loop:
   - dnsmasq.consul
+  tags: ["install", "optional"]
 
 - name: dnsmasq | Start and enable unit
   become: true
@@ -45,3 +49,4 @@
     masked: no
     enabled: yes
     state: started
+  tags: ["install", "optional"]

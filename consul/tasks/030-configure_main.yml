@@ -1,9 +1,10 @@
 ---
 
-- name: configure | environment settings
+  # Configure environment variables
+- name: CONFIGURE | {{ application }} environment
   become: true
   notify:
-  - reload_daemon
+    - reload_daemon
   template:
     dest: "/etc/profile.d/{{ item }}"
     src: "{{ item }}.j2"
@@ -11,12 +12,14 @@
     group: "root"
     mode: 0644
   loop:
-  - environment.sh
+    - environment.sh
+  tags: ["configure"]
 
-- name: configure |  application settings
+  # Add configurationfiles to correct directory
+- name: CONFIGURE | {{ application }} settings
   become: true
   notify:
-  - reload_daemon
+    - reload_daemon
   template:
     dest: "{{ path_settings }}/{{ application }}.d/{{ item }}"
     src: "{{ item }}.j2"
@@ -24,29 +27,19 @@
     group: "root"
     mode: 0644
   loop:
-  - settings.hcl
+    - settings.hcl
+  tags: ["configure"]
 
-- name: configure | unit definition
+  # Create service definition (systemd unit)
+- name: CONFIGURE | {{ application }} unit definition
   become: true
   notify:
-  - reload_daemon
-  - restart_unit
+    - reload_daemon
+    - restart_unit
   template:
     dest: "{{ path_systemd }}/{{ application }}.service"
     src: "{{ application }}.service.j2"
     owner: root
     group: root
     mode: 0644
-
-#- name: nomad | template unit overrides
-#  become: true
-#  notify:
-#  - restart_unit_nomad
-#  template:
-#    dest: "{{ base_dir['systemd'] }}/nomad.service.d/{{ item }}"
-#    src: "{{ item }}.j2"
-#    owner: root
-#    group: root
-#    mode: 0644
-#  loop:
-#  - override.conf
+  tags: ["configure"]

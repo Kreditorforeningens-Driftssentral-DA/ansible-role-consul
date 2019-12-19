@@ -11,7 +11,7 @@ server_enabled: true
 server_bootstrap_expect: 1
 server_bootstrap_address: ["127.0.0.1"]
 
-# Client settings
+# Client settings (remove?)
 client_enabled: false
 
 # Performance | 0 - 10
@@ -48,3 +48,7 @@ connect_provider: "consul"
 telemetry_enabled: false
 telemetry_prometheus_enabled: true
 telemetry_prometheus_retention: "600s"
+
+# OS settings
+configure_firewalld: false
+configure_selinux: false
