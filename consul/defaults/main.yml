@@ -42,7 +42,7 @@ tls_enabled: false
 
 # Consul Connect settings
 connect_enabled: false
-connect_provider: "consul"
+connect_provider: ""
 
 # Telemetry settings
 telemetry_enabled: false
