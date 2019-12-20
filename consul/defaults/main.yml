@@ -43,6 +43,9 @@ tls_enabled: false
 # Consul Connect settings
 connect_enabled: false
 connect_provider: ""
+connect_provider_vault_address: ""
+connect_provider_vault_pki_root: ""
+connect_provider_vault_pki_intermediate: ""
 
 # Telemetry settings
 telemetry_enabled: false

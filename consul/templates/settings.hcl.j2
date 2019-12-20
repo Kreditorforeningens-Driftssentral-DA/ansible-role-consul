@@ -187,22 +187,20 @@ verify_server_hostname = false
 
 connect {
   enabled = {{ connect_enabled | default(false) | bool | lower }}
-  ca_provider = "{{ connect_provider | default('consul') }}"
-  ca_config {
 {% if connect_provider == "consul" %}
-    private_key = ""
-    root_cert   = ""
+  ca_provider = "consul"
 {% endif %}
 {% if connect_provider == "vault" %}
+  ca_provider = "vault"
+  ca_config {
     address = "{{ connect_provider_vault_address | default('127.0.0.1:8200') }}"
-    token   = ""
+    token   = "{{ connect_provider_vault_token }}"
 
-    root_pki_path         = "pki_root"
-    intermediate_pki_path = "pki_intermediate"
-{% endif %}
-    csr_max_concurrent = 1
+    root_pki_path         = "{{ connect_provider_vault_pki_root | default('pki_root') }}"
+    intermediate_pki_path = "{{ connect_provider_vault_pki_intermediate | default('pki_intermediate') }}"
+    csr_max_concurrent    = 1
   }
-
+{% endif %}
 }
 
 # ------------------------------------------------------------------------------
