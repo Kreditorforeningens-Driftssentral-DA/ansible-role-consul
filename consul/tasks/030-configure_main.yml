@@ -6,13 +6,13 @@
   notify:
     - reload_daemon
   template:
-    dest: "/etc/profile.d/{{ item }}"
+    dest: "/etc/profile.d/50-{{ item }}"
     src: "{{ item }}.j2"
     owner: "root"
     group: "root"
     mode: 0644
   loop:
-    - environment.sh
+    - consul.sh
   tags: ["configure"]
 
   # Add configurationfiles to correct directory

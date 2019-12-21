@@ -30,7 +30,7 @@
 - name: dnsmasq | application settings
   become: true
   notify:
-  - reload_daemon
+    - reload_daemon
   template:
     dest: "{{ dnsmasq_config_path }}/{{ item }}"
     src: "{{ item }}.j2"
