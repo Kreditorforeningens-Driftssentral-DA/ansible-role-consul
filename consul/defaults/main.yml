@@ -33,9 +33,13 @@ encryption_key: "" # Generate using 'consul keygen'
 
 # ACL settings
 acl_enabled: false
+acl_datacenter: ""
+acl_default_policy: "deny"
+acl_down_policy: "extend-cache"
 acl_master_token: ""
+acl_default_token: ""
 acl_agent_token: ""
-acl_datacenter: "dc1"
+acl_replication_token: ""
 
 # TLS settings
 tls_enabled: false

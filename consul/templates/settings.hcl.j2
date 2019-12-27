@@ -145,23 +145,23 @@ enable_acl_replication = true
 
 acl {
   enabled        = {{ acl_enabled | default(false) | bool | lower }}
+  default_policy = "{{ acl_default_policy | default('deny') }}"
 
-  default_policy = "deny"
   policy_ttl     = "120s"
   role_ttl       = "120s"
   token_ttl      = "120s"
-  down_policy    = "extend-cache"
+  down_policy    = "{{ acl_down_policy | default('extend-cache') }}"
 
   enable_key_list_policy   = false
   enable_token_replication = false
   enable_token_persistence = true
 
   tokens {
-    master       = ""
-    default      = ""
-    agent        = ""
-    agent_master = ""
-    replication  = ""
+    master       = "{{ acl_master_token | default('') }}"
+    default      = "{{ acl_default_token | default('') }}"
+    agent        = "{{ acl_agent_token | default('') }}"
+    agent_master = "{{ acl_agent_master_token | default('') }}"
+    replication  = "{{ acl_replication_token | default('') }}"
   }
 }
 
