@@ -5,7 +5,7 @@
 ANSIBLE_CONSUL_VERSION={{ version }}
 {% if acl_enabled and server_enabled %}
 CONSUL_HTTP_TOKEN={{ acl_master_token }}
-{% elseif acl_enabled and not server_enabled %}
+{% elif acl_enabled and not server_enabled %}
 CONSUL_HTTP_TOKEN={{ acl_agent_token }}
 {% endif %}
 
